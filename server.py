@@ -25,9 +25,6 @@ def index():
     return render_template('homepage.html')
 
 
-
-
-
 @app.route('/users')
 def user_list():
     """ Show a list of all of our users """
@@ -60,10 +57,12 @@ def verify_reg():
         user = User(email=email, password=password)
         db.session.add(user)
         db.session.commit()
+        flash("Thanks for registering!")
         return redirect('/')
 
     else:
         print "Existing user"
+        flash("You're already registered!")
         return redirect('/')
 
 
@@ -85,7 +84,6 @@ def login():
     return render_template('login.html')
 
 
-
 @app.route('/verify-login', methods=["POST"])
 def verify_login():
     """ Verify user and add to session """
@@ -105,15 +103,26 @@ def verify_login():
         if login_password == existing_password:
             #Add to session
             session['login'] = existing_user.user_id
+            flash("Success, you are now logged in!")
             return redirect('/')
         else:
+            flash("Incorrect password. Please try again.")
             return redirect('/login')
 
     # Not in DB
     else:
         print "UN not in DB"
+        flash("That email couldn't be found. Please try again.")
         return redirect('/login')
 
+@app.route('/logout')
+def logout():
+    """Logs user out """
+
+    session.pop('login')
+
+    flash("Goodbye, you are now logged out!")
+    return redirect('/')
 
 
 
