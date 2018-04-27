@@ -136,6 +136,26 @@ def logout():
     return redirect('/')
 
 
+@app.route('/users/<user_id>')
+def show_user_details(user_id):
+    """ Display infomration about the user """
+
+    requested_user = User.query.get(user_id)
+    print requested_user
+
+    age = requested_user.age
+    zipcode = requested_user.zipcode
+    movie_list = Rating.query.filter_by(user_id=user_id).all()
+
+
+
+    return render_template('user_page.html',
+                            user_id=user_id,
+                            age=age,
+                            zipcode=zipcode,
+                            movies= movie_list)
+
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
