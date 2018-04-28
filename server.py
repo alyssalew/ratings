@@ -5,6 +5,9 @@ from jinja2 import StrictUndefined
 from flask import (Flask, render_template, redirect, request, flash, session)
 from flask_debugtoolbar import DebugToolbarExtension
 
+# For counting:
+    # from SQLAlchemy import func
+
 from model import User, Rating, Movie, connect_to_db, db
 
 
@@ -33,6 +36,13 @@ def user_list():
 
     return render_template("user_list.html", users=users)
 
+@app.route('/movies')
+def movie_list():
+    """ Show a list all of our movies """
+
+    movies = Movie.query.order_by(Movie.title).all()
+
+    return render_template("movie_list.html", movies=movies)
 
 @app.route('/register')
 def registration():
@@ -99,7 +109,7 @@ def verify_login():
     login_email = request.form.get("email")
     login_password = request.form.get("password")
 
-    # Get user obbject
+    # Get user object
     existing_user = User.query.filter(User.email == login_email).all()
 
     # In DB?
@@ -164,6 +174,65 @@ def show_user_details(user_id):
                             age=age,
                             zipcode=zipcode,
                             movies= movie_list)
+
+@app.route('/movies/<movie_id>', methods=['GET'])
+def show_movie_details(movie_id):
+    """ Display infomration about a movie """
+
+    requested_movie = Movie.query.get(movie_id)
+    # print requested_movie
+
+
+    # Trying to get count of num times movies was rated each score:
+        # ratings_list = Rating.query(Rating.score, func.count(Rating.score))filter_by(movie_id=movie_id).group_by(Rating.score).all()
+    ratings_list = Rating.query.filter_by(movie_id=movie_id).all()
+    # print ratings_list
+    return render_template('movie_page.html',
+                            movie_id=movie_id,
+                            movie=requested_movie,
+                            ratings=ratings_list)
+
+@app.route('/movies/<movie_id>', methods=['POST'])
+def show_updated_movie_details(movie_id):
+    """ Display infomration about a movie, updated with user's rating"""
+
+    user_rating = request.form.get("user_rating")
+
+    if 'login' in session:
+        user_id = session['login']
+
+        # Look to see if they have existing rating for movie
+        existing_rating = Rating.query.filter(Rating.user_id == user_id, Rating.movie_id == movie_id).all()
+
+        if len(existing_rating) == 1:
+            print "Existing User Rating"
+
+            their_rating = existing_rating[0]
+            their_rating.score = user_rating
+            db.session.commit()
+
+            flash("You have updated your rating to {}!".format(user_rating))
+
+        if len(existing_rating) == 0:
+            print "New User Rating!"
+            new_rating = Rating(movie_id=movie_id, user_id=user_id, score=user_rating)
+            print new_rating
+            db.session.add(new_rating)
+            db.session.commit()
+
+            flash("You have added your new rating of {}!".format(user_rating))
+
+        requested_movie = Movie.query.get(movie_id)
+        ratings_list = Rating.query.filter_by(movie_id=movie_id).all()
+        # print ratings_list
+        return render_template('movie_page.html',
+                                movie_id=movie_id,
+                                movie=requested_movie,
+                                ratings=ratings_list)
+
+    else:
+        flash ('You must be logged in to rate a movie. Please log in!')
+        return redirect('/login')
 
 
 

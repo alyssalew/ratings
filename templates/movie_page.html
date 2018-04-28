@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2> {{movie.title}} </h2>
+
+<ul>
+    <li>Release Date: {{movie.released_at.month}}/{{movie.released_at.day}}/{{movie.released_at.year}}</li>
+    <li>IMDB URL: <a href="{{movie.imdb_url}}">{{movie.imdb_url}}</a></li>
+</ul>
+
+<h3> Ratings </h3>
+    <ul>
+    {% for obj in ratings %}
+        <li>{{obj.score}}</li>
+    {% endfor %}
+    
+    </ul>
+
+<h3> Rate "{{movie.title}}" </h3>
+    <div> Enter your rating between 1-5. </div>
+    <form action = '/movies/{{movie_id}}' method="POST">
+        <input type='number' name='user_rating' min='1' max='5'>
+        <input type='submit'>
+    </form>
+
+
+{% endblock %}
