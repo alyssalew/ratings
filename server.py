@@ -40,12 +40,15 @@ def registration():
 
     return render_template('register.html')
 
+
 @app.route('/verify-registration', methods=["POST"])
 def verify_reg():
     """Verify the email and password entered"""
 
     email = request.form.get("email")
     password = request.form.get("password")
+    age = request.form.get("age")
+    zipcode = request.form.get("zipcode")
 
     # Look for the email in the DB
     existing_user = User.query.filter(User.email == email).all()
@@ -54,7 +57,7 @@ def verify_reg():
     if len(existing_user) == 0:
         print "New User"
 
-        user = User(email=email, password=password)
+        user = User(email=email, password=password, age=age, zipcode=zipcode)
         db.session.add(user)
         db.session.commit()
         flash("Thanks for registering!")
@@ -67,7 +70,7 @@ def verify_reg():
 
     else:
         print "MAJOR PROBLEM!"
-        flash("You have a website loophole... Please try again later.")
+        flash("You have found a website loophole... Please try again later.")
         return redirect("/")
 
 
@@ -106,10 +109,14 @@ def verify_login():
 
         # Correct password?
         if login_password == existing_password:
-            #Add to session
-            session['login'] = existing_user[0].user_id
-            flash("Success, you are now logged in!")
-            return redirect('/')
+            if 'login' in session:
+                flash("You are already logged in!")
+                return redirect('/')
+            else:
+                #Add to session
+                session['login'] = existing_user[0].user_id
+                flash("Success, you are now logged in!")
+                return redirect('/')
         else:
             flash("Incorrect password. Please try again.")
             return redirect('/login')
@@ -130,10 +137,13 @@ def verify_login():
 def logout():
     """Logs user out """
 
-    session.pop('login')
-
-    flash("Goodbye, you are now logged out!")
-    return redirect('/')
+    if 'login' in session:
+        session.pop('login')
+        flash("Goodbye, you are now logged out!")
+        return redirect('/')
+    else:
+        flash("You were never logged in :(")
+        return redirect ('/')
 
 
 @app.route('/users/<user_id>')

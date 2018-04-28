@@ -4,21 +4,17 @@
 <h2> Info for User {{user_id}} </h2>
 
 <ul>
-
     <li>Age: {{age}}</li>
     <li>Zipcode: {{zipcode}}</li>
-    <h4> Movies</h4>
+</ul>
 
+<h3> Movies</h3>
     <ul>
     {% for obj in movies %}
         <li>{{obj.movie.title}} ----- {{obj.score}}</li>
-
     {% endfor %}
     </ul>
 
-
-
-</ul>
 
 
 {% endblock %}

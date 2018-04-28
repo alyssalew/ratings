@@ -4,9 +4,11 @@
 <h1>Register</h1>
 
 <form action='/verify-registration' method="POST">
-    Email: <input type="text" name="email">
-    Password: <input type= "text" name= "password">
-    <input type="submit">
+    <div> Email: <input type="text" name="email" required> </div>
+    <div>Password: <input type= "text" name= "password" required></div>
+    <div>Age: <input type="number" name="age"></div>
+    <div>Zipcode: <input type="text" name="zipcode"></div>
+    <div><input type="submit"></div>
 </form>
 
 {% endblock %}
