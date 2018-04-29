@@ -17,11 +17,12 @@
     </ul>
 
 <h3> Rate "{{movie.title}}" </h3>
-    <div> Enter your rating between 1-5. </div>
-    <form action = '/movies/{{movie_id}}' method="POST">
-        <input type='number' name='user_rating' min='1' max='5'>
-        <input type='submit'>
-    </form>
+    <div id="user_rate"> Enter your rating between 1-5. 
+        <form action = '/movies/{{movie_id}}' method="POST">
+            <input type='number' name='user_rating' min='1' max='5'>
+            <input type='submit'>
+        </form>
+    </div>
 
 
 {% endblock %}

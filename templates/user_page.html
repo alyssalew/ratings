@@ -11,7 +11,7 @@
 <h3> Movies</h3>
     <ul>
     {% for obj in movies %}
-        <li>{{obj.movie.title}} ----- {{obj.score}}</li>
+        <li><a href="/movies/{{obj.movie_id}}"> {{obj.movie.title}} </a> ----- {{obj.score}}</li>
     {% endfor %}
     </ul>
 
